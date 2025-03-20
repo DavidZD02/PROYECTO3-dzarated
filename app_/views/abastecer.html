@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abastecer</title>
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+            color: #880e4f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+            color: #6a1b9a;
+        }
+
+        table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            background: linear-gradient(135deg, #ffffff, #f8bbd0);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        th {
+            background: linear-gradient(90deg, #ad1457, #880e4f);
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fce4ec;
+            color: #333;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        td {
+            font-weight: bold;
+        }
+
+        button {
+            background: linear-gradient(90deg, #b996a5, #96657f);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #96657f, #b996a5);
+            transform: scale(1.05);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        a {
+            text-decoration: none;
+            color: #6a1b9a;
+            font-weight: bold;
+            margin-top: 20px;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #880e4f;
+        }
+
+        .message {
+            background: linear-gradient(90deg, #f8bbd0, #fce4ec);
+            color: #880e4f;
+            border-left: 5px solid #6a1b9a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    {% if current_user.is_authenticated and (current_user.is_employee) %}
+    <h1>Abastecer</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Inventario</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for base in bases %}
+            <tr>
+                <td>{{ base.nombre }}</td>
+                <td>{{ base.inventario }}</td>
+                <td>
+                    <div class="button-container">
+                        <form method="POST" action="{{ url_for('home.abastecer') }}">
+                            <input type="hidden" name="base_id" value="{{ base.id }}">
+                            <button type="submit">Abastecer</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('home.abastecer') }}">
+                            <input type="hidden" name="base_reiniciar_id" value="{{ base.id }}">
+                            <button type="submit">Renovar Inventario</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% for complemento in complementos %}
+            <tr>
+                <td>{{ complemento.nombre }}</td>
+                <td>{{ complemento.inventario }}</td>
+                <td>
+                    <div class="button-container">
+                        <form method="POST" action="{{ url_for('home.abastecer') }}">
+                            <input type="hidden" name="complemento_id" value="{{ complemento.id }}">
+                            <button type="submit">Abastecer</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('home.abastecer') }}">
+                            <input type="hidden" name="complemento_reiniciar_id" value="{{ complemento.id }}">
+                            <button type="submit">Renovar Inventario</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <h1>401 - No autorizado</h1>
+    <p>No tienes permiso para acceder a este recurso.</p>
+    {% endif %}
+    <a href="/dashboard">Volver</a>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="message">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</body>
+
+</html>
